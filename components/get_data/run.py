@@ -5,7 +5,6 @@ This script download a URL to a local destination
 import argparse
 import logging
 import os
-
 import wandb
 
 from wandb_utils.log_artifact import log_artifact
@@ -16,7 +15,7 @@ logger = logging.getLogger()
 
 def go(args):
 
-    run = wandb.init(job_type="download_file")
+    run = wandb.init(job_type="get_data")
     run.config.update(args)
 
     logger.info(f"Returning sample {args.sample}")
