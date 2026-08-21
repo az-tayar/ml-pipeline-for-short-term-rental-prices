@@ -5,9 +5,8 @@ import tempfile
 import os
 import wandb
 import hydra
-from omegaconf import DictConfig
 
-_steps = [
+steps = [
     "download",
     "basic_cleaning",
     "data_check",
@@ -17,7 +16,7 @@ _steps = [
 
 # This automatically reads in the configuration
 @hydra.main(version_base=None, config_name='config', config_path='.') 
-def go(config: DictConfig):
+def go(config):
 
     # Setup the wandb experiment. All runs will be grouped under this name
     os.environ["WANDB_PROJECT"] = config["main"]["project_name"]
@@ -25,13 +24,13 @@ def go(config: DictConfig):
 
     # Steps to execute
     steps_par = config['main']['steps']
-    active_steps = steps_par.split(",") if steps_par != "all" else _steps
+    active_steps = steps_par.split(",") if steps_par != "all" else steps
 
 
     if "download" in active_steps:
         # Download file and load in W&B
         _ = mlflow.run(
-            f"{config['main']['components_repository']}/get_data",
+            "components/get_data",
             "main",
             env_manager="conda",
             parameters={
@@ -73,7 +72,7 @@ def go(config: DictConfig):
 
     if "data_split" in active_steps:
         _ = mlflow.run(
-            f"{config['main']['components_repository']}/train_val_test_split",
+            "components/train_val_test_split",
             "main",
             env_manager="conda",
             parameters={
@@ -110,7 +109,7 @@ def go(config: DictConfig):
     if "test_regression_model" in active_steps:
 
         _ = mlflow.run(
-            f"{config['main']['components_repository']}/test_regression_model",
+            "components/test_regression_model",
             "main",
             env_manager="conda",
             parameters={

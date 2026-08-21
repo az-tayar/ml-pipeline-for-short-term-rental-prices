@@ -7,8 +7,6 @@ import logging
 import os
 import wandb
 
-from wandb_utils.log_artifact import log_artifact
-
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
 
@@ -17,16 +15,21 @@ def go(args):
 
     run = wandb.init(job_type="get_data")
     run.config.update(args)
-
+    
     logger.info(f"Returning sample {args.sample}")
     logger.info(f"Uploading {args.artifact_name} to Weights & Biases")
-    log_artifact(
+
+    # Log to W&B
+    artifact = wandb.Artifact(
         args.artifact_name,
-        args.artifact_type,
-        args.artifact_description,
-        os.path.join("data", args.sample),
-        run,
+        type=args.artifact_type,
+        description=args.artifact_description,
     )
+    artifact.add_file(os.path.join("data", args.sample))
+    run.log_artifact(artifact)
+
+    # Wait for the artifact to be logged before proceeding
+    artifact.wait()
 
 
 if __name__ == "__main__":
@@ -38,9 +41,7 @@ if __name__ == "__main__":
 
     parser.add_argument("artifact_type", type=str, help="Output artifact type.")
 
-    parser.add_argument(
-        "artifact_description", type=str, help="A brief description of this artifact"
-    )
+    parser.add_argument("artifact_description", type=str, help="A brief description of this artifact")
 
     args = parser.parse_args()
 
