@@ -23,31 +23,31 @@ def go(args):
     artifact_local_path = run.use_artifact(args.input_artifact).file()
     df = pd.read_csv(artifact_local_path)
     
-    # taking only the range from 10 to 350
-    idx = df['price'].between(args.min_price, args.max_price)
-    df = df[idx].copy()
 
-    # converting the 'last_review' col to datetime object instead 
-    df['last_review'] = pd.to_datetime(df['last_review'])
 
-    idx = df['longitude'].between(-74.25, -73.50) & df['latitude'].between(40.5, 41.2)
-    df = df[idx].copy() 
 
-    logger.info("Cleaned data has %s rows and %s columns", *df.shape)
+  
 
-    # Save cleaned data
-    df.to_csv(args.output_artifact, index=False)
 
-    artifact = wandb.Artifact(
-        name=args.output_artifact,
-        type=args.output_type,
-        description=args.output_description,
-    )
-    artifact.add_file(args.output_artifact)
-    run.log_artifact(artifact)
+
+
+
+
+    # logger.info("Cleaned data has %s rows and %s columns", *df.shape)
+
+    # # Save cleaned data
+    # df.to_csv(args.output_artifact, index=False)
+
+    # artifact = wandb.Artifact(
+    #     name=args.output_artifact,
+    #     type=args.output_type,
+    #     description=args.output_description,
+    # )
+    # artifact.add_file(args.output_artifact)
+    # run.log_artifact(artifact)
     
-    artifact.wait()
-    run.finish()
+    # artifact.wait()
+    # run.finish()
 
 
 if __name__ == "__main__":
@@ -79,20 +79,6 @@ if __name__ == "__main__":
         "--output_description", 
         type=str,
         help="Output artifact description",
-        required=True
-    )
-
-    parser.add_argument(
-        "--min_price", 
-        type=float,
-        help="Minimum price for filtering",
-        required=True
-    )
-
-    parser.add_argument(
-        "--max_price", 
-        type=float,
-        help="Maximum price for filtering",
         required=True
     )
 

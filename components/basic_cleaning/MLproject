@@ -21,14 +21,6 @@ entry_points:
         description: this is the output artifact description
         type: str
 
-      min_price:
-        description: this is the minimum price
-        type: float
-
-      max_price:
-        description: this is the maximum price
-        type: float
-
-
     command: >-
-        python run.py  --input_artifact {input_artifact}  --output_artifact {output_artifact}  --output_type {output_type}  --output_description {output_description}  --min_price {min_price}  --max_price {max_price} 
+        python run.py  --input_artifact {input_artifact}  --output_artifact {output_artifact}  --output_type {output_type}  --output_description {output_description} 
+
