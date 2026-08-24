@@ -6,6 +6,7 @@ import argparse
 import logging
 import pandas as pd
 import wandb
+import numpy as np
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
@@ -21,33 +22,29 @@ def go(args):
     run.config.update(args)
 
     artifact_local_path = run.use_artifact(args.input_artifact).file()
-    df = pd.read_csv(artifact_local_path)
+    df = pd.read_csv(artifact_local_path,  sep=';')
     
+    # replacing all types of 'basic' education with a single value 'basic'
+    df['education'].replace({'basic.4y': 'basic', 'basic.6y': 'basic', 'basic.9y': 'basic'}, inplace=True)
 
-
-
-  
-
-
-
-
-
-
-    # logger.info("Cleaned data has %s rows and %s columns", *df.shape)
-
-    # # Save cleaned data
-    # df.to_csv(args.output_artifact, index=False)
-
-    # artifact = wandb.Artifact(
-    #     name=args.output_artifact,
-    #     type=args.output_type,
-    #     description=args.output_description,
-    # )
-    # artifact.add_file(args.output_artifact)
-    # run.log_artifact(artifact)
+    # # replacing all 'unknown' values with NaN
+    # df.replace('unknown', np.nan, inplace=True)
     
-    # artifact.wait()
-    # run.finish()
+    logger.info("Cleaned data has %s rows and %s columns", *df.shape)
+
+    # Save cleaned data
+    df.to_csv(args.output_artifact, index=False)
+
+    artifact = wandb.Artifact(
+        name=args.output_artifact,
+        type=args.output_type,
+        description=args.output_description,
+    )
+    artifact.add_file(args.output_artifact)
+    run.log_artifact(artifact)
+    
+    artifact.wait()
+    run.finish()
 
 
 if __name__ == "__main__":
