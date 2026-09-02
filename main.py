@@ -7,9 +7,9 @@ import wandb
 import hydra
 
 steps = [
-    "download",
-    "basic_cleaning",
-    "data_check",
+    "data_ingestion",
+    "preprocessing",
+    "tests",
     "data_split",
     "train_random_forest"]
 
@@ -27,10 +27,10 @@ def go(config):
     active_steps = steps_par.split(",") if steps_par != "all" else steps
 
 
-    if "download" in active_steps:
+    if "data_ingestion" in active_steps:
         # Download file and load in W&B
         _ = mlflow.run(
-            "components/get_data",
+            "components/data_ingestion",
             "main",
             env_manager="conda",
             parameters={
@@ -41,9 +41,9 @@ def go(config):
             },
         )
 
-    if "basic_cleaning" in active_steps:
+    if "preprocessing" in active_steps:
         _ = mlflow.run(
-            "components/basic_cleaning",
+            "components/preprocessing",
             "main",
             env_manager="conda",
             parameters={
@@ -54,17 +54,15 @@ def go(config):
             },
         )
 
-    if "data_check" in active_steps:
+    if "tests" in active_steps:
         _ = mlflow.run(
-            "src/data_check",
+            "components/tests",
             "main",
             env_manager="conda",
             parameters={
                 "csv": "clean_sample.csv:latest",
                 "ref": "clean_sample.csv:reference",
                 "kl_threshold": config["data_check"]["kl_threshold"],
-                "min_price": config['etl']['min_price'],
-                "max_price": config['etl']['max_price']
             },
         )
 

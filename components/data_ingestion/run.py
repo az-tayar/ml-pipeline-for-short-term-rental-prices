@@ -13,7 +13,7 @@ logger = logging.getLogger()
 
 def go(args):
 
-    run = wandb.init(job_type="get_data")
+    run = wandb.init(job_type="data_ingestion")
     run.config.update(args)
     
     logger.info(f"Returning sample {args.sample}")
@@ -25,7 +25,7 @@ def go(args):
         type=args.artifact_type,
         description=args.artifact_description,
     )
-    artifact.add_file(os.path.join("data", args.sample))
+    artifact.add_file(os.path.join("../../data", args.sample))
     run.log_artifact(artifact)
 
     # Wait for the artifact to be logged before proceeding

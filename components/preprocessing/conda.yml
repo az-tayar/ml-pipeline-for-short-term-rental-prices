@@ -1,12 +1,11 @@
-name: download_file
+name: preprocessing
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.13.0
   - pip=24.3.1
-  - requests=2.31.0
+  - python=3.13
+  - pandas=2.3.2   # stable version
   - pip:
       - mlflow==3.3.2
       - wandb==0.21.3
-      - -e ..

@@ -7,6 +7,7 @@ import logging
 import pandas as pd
 import wandb
 import numpy as np
+import os
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
@@ -16,7 +17,7 @@ logger = logging.getLogger()
 def go(args):
 
     run = wandb.init(
-        job_type="basic_cleaning",
+        job_type="preprocessing",
         settings=wandb.Settings(disable_job_creation=False),
     )
     run.config.update(args)
@@ -26,21 +27,18 @@ def go(args):
     
     # replacing all types of 'basic' education with a single value 'basic'
     df['education'].replace({'basic.4y': 'basic', 'basic.6y': 'basic', 'basic.9y': 'basic'}, inplace=True)
-
-    # # replacing all 'unknown' values with NaN
-    # df.replace('unknown', np.nan, inplace=True)
     
     logger.info("Cleaned data has %s rows and %s columns", *df.shape)
-
+    
     # Save cleaned data
-    df.to_csv(args.output_artifact, index=False)
+    df.to_csv(os.path.join("../../data", args.output_artifact), index=False)
 
     artifact = wandb.Artifact(
         name=args.output_artifact,
         type=args.output_type,
         description=args.output_description,
     )
-    artifact.add_file(args.output_artifact)
+    artifact.add_file(os.path.join("../../data", args.output_artifact))
     run.log_artifact(artifact)
     
     artifact.wait()

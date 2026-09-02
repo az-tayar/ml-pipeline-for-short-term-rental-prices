@@ -1,4 +1,4 @@
-name: download_file
+name: data_ingestion
 conda_env: conda.yml
 
 entry_points:
