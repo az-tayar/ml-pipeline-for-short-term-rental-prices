@@ -1,4 +1,4 @@
-name: download_file
+name: data_split
 channels:
   - conda-forge
   - defaults
@@ -10,4 +10,3 @@ dependencies:
   - pip:
       - mlflow==3.3.2
       - wandb==0.21.3
-      - -e ..

@@ -10,7 +10,7 @@ modeling:
   test_size: 0.2
   val_size: 0.2
   random_seed: 42
-  stratify_by: "neighbourhood_group"    # Column to use for stratification (use "none" for no stratification)
+  stratify_by: "y" 
   max_tfidf_features: 30
   random_forest:
     n_estimators: 100

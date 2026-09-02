@@ -24,13 +24,13 @@ def test_row_count(data):
     assert 30000 < n_rows < 50000
 
 
-def test_similar_neigh_distrib(data: pd.DataFrame, ref_data: pd.DataFrame, kl_threshold: float):
+def test_similar_target_distrib(data: pd.DataFrame, ref_data: pd.DataFrame, kl_threshold: float):
     """
     Apply a threshold on the KL divergence to detect if the distribution of the new data is
     significantly different than that of the reference dataset
     """
-    dist1 = data['job'].value_counts().sort_index()
-    dist2 = ref_data['job'].value_counts().sort_index()
+    dist1 = data['y'].value_counts().sort_index()
+    dist2 = ref_data['y'].value_counts().sort_index()
 
     assert scipy.stats.entropy(dist1, dist2, base=2) < kl_threshold
 

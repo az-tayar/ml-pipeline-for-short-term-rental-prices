@@ -6,9 +6,9 @@ import argparse
 import logging
 import pandas as pd
 import wandb
-import tempfile
+import os
 from sklearn.model_selection import train_test_split
-from wandb_utils.log_artifact import log_artifact
+
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -16,11 +16,10 @@ logger = logging.getLogger()
 
 def go(args):
 
-    run = wandb.init(job_type="train_val_test_split")
+    run = wandb.init(job_type="data_split")
     run.config.update(args)
 
-    # Download input artifact. This will also note that this script is using this
-    # particular version of the artifact
+    # Download input artifact
     logger.info(f"Fetching artifact {args.input}")
     artifact_local_path = run.use_artifact(args.input).file()
 
@@ -35,19 +34,22 @@ def go(args):
     )
 
     # Save to output files
-    for df, k in zip([trainval, test], ['trainval', 'test']):
-        logger.info(f"Uploading {k}_data.csv dataset")
-        with tempfile.NamedTemporaryFile("w") as fp:
+    for split_df, key in zip([trainval, test], ['trainval', 'test']):
+        logger.info(f"Uploading {key}_data.csv dataset")
 
-            df.to_csv(fp.name, index=False)
+        split_df.to_csv(os.path.join("../../data", f'{key}_data.csv'), index=False)
 
-            log_artifact(
-                f"{k}_data.csv",
-                f"{k}_data",
-                f"{k} split of dataset",
-                fp.name,
-                run,
-            )
+        # Log to W&B
+        artifact = wandb.Artifact(
+            f"{key}_data.csv",
+            type=f"{key}_data",
+            description=f"{key} split of dataset",
+        )
+        artifact.add_file(os.path.join("../../data", f'{key}_data.csv'))
+        run.log_artifact(artifact)
+
+        # Wait for the artifact to be logged before proceeding
+        artifact.wait()
 
 
 if __name__ == "__main__":

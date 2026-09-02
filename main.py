@@ -35,8 +35,8 @@ def go(config):
             env_manager="conda",
             parameters={
                 "sample": config["etl"]["sample"],
-                "artifact_name": "sample.csv",
-                "artifact_type": "raw_data",
+                "artifact_name": "dataset.csv",
+                "artifact_type": "raw_dataset",
                 "artifact_description": "Raw file as downloaded"
             },
         )
@@ -47,9 +47,9 @@ def go(config):
             "main",
             env_manager="conda",
             parameters={
-                "input_artifact": "sample.csv:latest",
-                "output_artifact": "clean_sample.csv",
-                "output_type": "clean_sample",
+                "input_artifact": "dataset.csv:latest",
+                "output_artifact": "clean_dataset.csv",
+                "output_type": "clean_dataset",
                 "output_description": "Data with outliers and null values removed",
             },
         )
@@ -60,19 +60,19 @@ def go(config):
             "main",
             env_manager="conda",
             parameters={
-                "csv": "clean_sample.csv:latest",
-                "ref": "clean_sample.csv:reference",
+                "csv": "clean_dataset.csv:latest",
+                "ref": "clean_dataset.csv:reference",
                 "kl_threshold": config["data_check"]["kl_threshold"],
             },
         )
 
     if "data_split" in active_steps:
         _ = mlflow.run(
-            "components/train_val_test_split",
+            "components/data_split",
             "main",
             env_manager="conda",
             parameters={
-                "input": "clean_sample.csv:latest",
+                "input": "clean_dataset.csv:latest",
                 "test_size": config["modeling"]["test_size"],
                 "random_seed": config["modeling"]["random_seed"],
                 "stratify_by": config["modeling"]["stratify_by"]
