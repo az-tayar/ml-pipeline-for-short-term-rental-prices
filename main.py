@@ -1,7 +1,5 @@
 import json
-
 import mlflow
-import tempfile
 import os
 import wandb
 import hydra
@@ -9,9 +7,11 @@ import hydra
 steps = [
     "data_ingestion",
     "preprocessing",
-    "tests",
+    "eda",
+    "test_data",
     "data_split",
-    "train_random_forest"]
+    "train",
+    "test_model"]
 
 
 # This automatically reads in the configuration
@@ -54,7 +54,20 @@ def go(config):
             },
         )
 
-    if "tests" in active_steps:
+    if "eda" in active_steps:
+        _ = mlflow.run(
+            "components/eda",
+            "main",
+            env_manager="conda",
+            parameters={
+                "input_artifact": "clean_dataset.csv:latest",
+                "output_artifact": "eda_report.html",
+                "output_type": "eda_report",
+                "output_description": "Exploratory data analysis report"
+            },
+        )
+
+    if "test_data" in active_steps:
         _ = mlflow.run(
             "components/tests",
             "main",
@@ -79,15 +92,10 @@ def go(config):
             },
         )
 
-    if "train_random_forest" in active_steps:
-
-        # NOTE: we need to serialize the random forest configuration into JSON
-        rf_config = os.path.abspath("rf_config.json")
-        with open(rf_config, "w+") as fp:
-            json.dump(dict(config["modeling"]["random_forest"].items()), fp)
+    if "train" in active_steps:
 
         _ = mlflow.run(
-            "src/train_random_forest",
+            "components/train",
             "main",
             env_manager="conda",
             parameters={
@@ -95,21 +103,19 @@ def go(config):
                 "val_size": config["modeling"]["val_size"],
                 "random_seed": config["modeling"]["random_seed"],
                 "stratify_by": config["modeling"]["stratify_by"],
-                "rf_config": rf_config,
-                "max_tfidf_features": config["modeling"]["max_tfidf_features"],
                 "output_artifact": 'random_forest_export'
             },
         )
 
 
-    if "test_regression_model" in active_steps:
+    if "test_model" in active_steps:
 
         _ = mlflow.run(
-            "components/test_regression_model",
+            "components/test_model",
             "main",
             env_manager="conda",
             parameters={
-                "mlflow_model": "random_forest_export:prod",
+                "mlflow_model": "random_forest_export:latest",
                 "test_dataset": "test_data.csv:latest"
             },
         )

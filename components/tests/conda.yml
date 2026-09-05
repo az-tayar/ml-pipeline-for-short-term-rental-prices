@@ -1,4 +1,4 @@
-name: tests
+name: test_data
 channels:
   - conda-forge
   - defaults

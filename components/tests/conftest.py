@@ -20,7 +20,6 @@ def data(request):
         pytest.fail("You must provide the --csv option on the command line")
 
     df = pd.read_csv(data_path)
-
     return df
 
 
@@ -35,7 +34,6 @@ def ref_data(request):
         pytest.fail("You must provide the --ref option on the command line")
 
     df = pd.read_csv(data_path)
-
     return df
 
 

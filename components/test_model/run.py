@@ -7,10 +7,8 @@ import logging
 import wandb
 import mlflow
 import pandas as pd
-from sklearn.metrics import mean_absolute_error
-
-from wandb_utils.log_artifact import log_artifact
-
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+    
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -22,8 +20,7 @@ def go(args):
     run.config.update(args)
 
     logger.info("Downloading artifacts")
-    # Download input artifact. This will also log that this script is using this
-    # particular version of the artifact
+    # Download input artifact
     model_local_path = run.use_artifact(args.mlflow_model).download()
 
     # Download test dataset
@@ -31,23 +28,28 @@ def go(args):
 
     # Read test dataset
     X_test = pd.read_csv(test_dataset_path)
-    y_test = X_test.pop("price")
+    y_test = X_test.pop("y")
 
     logger.info("Loading model and performing inference on test set")
     sk_pipe = mlflow.sklearn.load_model(model_local_path)
     y_pred = sk_pipe.predict(X_test)
 
-    logger.info("Scoring")
-    r_squared = sk_pipe.score(X_test, y_test)
+    logger.info("Calculating metrics")
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, pos_label='yes')
+    recall = recall_score(y_test, y_pred, pos_label='yes')
+    f1 = f1_score(y_test, y_pred, pos_label='yes')
 
-    mae = mean_absolute_error(y_test, y_pred)
+    logger.info(f"Accuracy: {accuracy}")
+    logger.info(f"Precision: {precision}")
+    logger.info(f"Recall: {recall}")
+    logger.info(f"F1 Score: {f1}")
 
-    logger.info(f"Score: {r_squared}")
-    logger.info(f"MAE: {mae}")
-
-    # Log MAE and r2
-    run.summary['r2'] = r_squared
-    run.summary['mae'] = mae
+    # Log metrics
+    run.summary['accuracy'] = accuracy
+    run.summary['precision'] = precision
+    run.summary['recall'] = recall
+    run.summary['f1'] = f1
 
 
 if __name__ == "__main__":
