@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 This script trains a Random Forest
 """
@@ -6,15 +5,12 @@ import argparse
 import logging
 import os
 import shutil
-from matplotlib import cm
-from matplotlib import cm
 import matplotlib.pyplot as plt
 import mlflow
 import yaml
 import pandas as pd
 import numpy as np
 import wandb
-import seaborn as sns
 
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
@@ -30,6 +26,14 @@ logger = logging.getLogger()
 
 
 def go(args):
+    """
+    Train, evaluate, and export a Random Forest classification pipeline.
+
+    Args:
+        args: Command-line arguments containing the training artifact,
+            validation size, random seed, stratification setting, and
+            output artifact name.
+    """
 
     run = wandb.init(job_type="train")
     run.config.update(args)
@@ -115,6 +119,16 @@ def go(args):
 
 
 def plot_confusion_matrix(y_val, y_pred):
+    """
+    Create a confusion matrix figure from validation labels and predictions.
+
+    Args:
+        y_val: True target values from the validation dataset.
+        y_pred: Predicted target values from the trained model.
+
+    Returns:
+        matplotlib.figure.Figure: Figure containing the confusion matrix.
+    """
 
     cm = confusion_matrix(y_val, y_pred, labels=["no", "yes"])
     fig, ax = plt.subplots(figsize=(6, 6))
@@ -124,6 +138,16 @@ def plot_confusion_matrix(y_val, y_pred):
 
 
 def get_inference_pipeline(rf_config):
+    """
+    Create the preprocessing and Random Forest inference pipeline.
+
+    Args:
+        rf_config: Dictionary containing the Random Forest model configuration.
+
+    Returns:
+        tuple: The sklearn pipeline and the list of processed feature names.
+    """
+
     # Let's handle the categorical features first
     # Ordinal categorical are categorical values for which the order is meaningful
     ordinal_cat_cols = ["education"]

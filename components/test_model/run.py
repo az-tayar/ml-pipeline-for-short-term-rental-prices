@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 This step takes the best model, tagged with the "prod" tag, and tests it against the test dataset
 """
@@ -15,6 +14,13 @@ logger = logging.getLogger()
 
 
 def go(args):
+    """
+    Evaluate the trained MLflow model against the test dataset and log classification metrics.
+
+    Args:
+        args: Command-line arguments containing the MLflow model artifact
+            and test dataset artifact.
+    """
 
     run = wandb.init(job_type="test_model")
     run.config.update(args)

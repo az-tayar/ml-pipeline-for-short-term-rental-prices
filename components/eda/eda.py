@@ -5,6 +5,14 @@ import argparse
 import ydata_profiling
 
 def go(args):
+    """
+    Perform exploratory data analysis on a W&B dataset artifact and generate a profiling report.
+
+    Args:
+        args: Command-line arguments containing the input artifact and
+            output artifact configuration.
+    """
+
     # Initialize a new W&B run
     run = wandb.init(project='BankCampaignAI', group='eda')
     run.config.update(args)

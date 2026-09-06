@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Download from W&B the raw dataset and apply some basic data cleaning, exporting the result to a new artifact
 """
@@ -15,6 +14,13 @@ logger = logging.getLogger()
 
 
 def go(args):
+    """
+    Download the raw dataset from W&B, apply basic data cleaning, and log the cleaned dataset as a new artifact.
+
+    Args:
+        args: Command-line arguments containing the input artifact and
+            output artifact configuration.
+    """
 
     run = wandb.init(
         job_type="preprocessing",

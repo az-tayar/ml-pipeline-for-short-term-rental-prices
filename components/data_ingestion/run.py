@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 This script download a URL to a local destination
 """
@@ -12,6 +11,13 @@ logger = logging.getLogger()
 
 
 def go(args):
+    """
+    Upload a local data sample to Weights & Biases as an artifact.
+
+    Args:
+        args: Command-line arguments containing the sample file name,
+            artifact name, artifact type, and artifact description.
+    """
 
     run = wandb.init(job_type="data_ingestion")
     run.config.update(args)

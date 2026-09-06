@@ -17,6 +17,13 @@ steps = [
 # This automatically reads in the configuration
 @hydra.main(version_base=None, config_name='config', config_path='.') 
 def go(config):
+    """
+    Execute the configured ML pipeline steps using Hydra, MLflow, and W&B.
+
+    Args:
+        config: Hydra configuration object containing project settings,
+            pipeline steps, ETL parameters, data checks, and modeling parameters.
+    """
 
     # Setup the wandb experiment. All runs will be grouped under this name
     os.environ["WANDB_PROJECT"] = config["main"]["project_name"]

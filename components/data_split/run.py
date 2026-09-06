@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 This script splits the provided dataframe in test and remainder
 """
@@ -15,6 +14,13 @@ logger = logging.getLogger()
 
 
 def go(args):
+    """
+    Split the input dataset into training/validation and test sets and log them as W&B artifacts.
+
+    Args:
+        args: Command-line arguments containing the input artifact, test size,
+            random seed, and optional stratification column.
+    """
 
     run = wandb.init(job_type="data_split")
     run.config.update(args)
