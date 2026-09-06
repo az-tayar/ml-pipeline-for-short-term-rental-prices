@@ -4,6 +4,7 @@ import argparse
 
 import ydata_profiling
 
+
 def go(args):
     """
     Perform exploratory data analysis on a W&B dataset artifact and generate a profiling report.
@@ -33,17 +34,18 @@ def go(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Exploratory data analysis report")
+    parser = argparse.ArgumentParser(
+        description="Exploratory data analysis report")
 
     parser.add_argument(
-        "--input_artifact", 
+        "--input_artifact",
         type=str,
         help="Input artifact to do EDA on",
         required=True
     )
 
     parser.add_argument(
-        "--output_artifact", 
+        "--output_artifact",
         type=str,
         help="Output artifact name",
         required=True

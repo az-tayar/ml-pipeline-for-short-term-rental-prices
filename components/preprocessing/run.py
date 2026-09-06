@@ -29,13 +29,14 @@ def go(args):
     run.config.update(args)
 
     artifact_local_path = run.use_artifact(args.input_artifact).file()
-    df = pd.read_csv(artifact_local_path,  sep=';')
-    
+    df = pd.read_csv(artifact_local_path, sep=';')
+
     # replacing all types of 'basic' education with a single value 'basic'
-    df['education'].replace({'basic.4y': 'basic', 'basic.6y': 'basic', 'basic.9y': 'basic'}, inplace=True)
-    
+    df['education'].replace(
+        {'basic.4y': 'basic', 'basic.6y': 'basic', 'basic.9y': 'basic'}, inplace=True)
+
     logger.info("Cleaned data has %s rows and %s columns", *df.shape)
-    
+
     # Save cleaned data
     df.to_csv(os.path.join("../../data", args.output_artifact), index=False)
 
@@ -46,7 +47,7 @@ def go(args):
     )
     artifact.add_file(os.path.join("../../data", args.output_artifact))
     run.log_artifact(artifact)
-    
+
     artifact.wait()
     run.finish()
 
@@ -56,28 +57,28 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="A very basic data cleaning")
 
     parser.add_argument(
-        "--input_artifact", 
+        "--input_artifact",
         type=str,
         help="Input artifact to be cleaned",
         required=True
     )
 
     parser.add_argument(
-        "--output_artifact", 
+        "--output_artifact",
         type=str,
         help="Output artifact name",
         required=True
     )
 
     parser.add_argument(
-        "--output_type", 
+        "--output_type",
         type=str,
         help="Output artifact type",
         required=True
     )
 
     parser.add_argument(
-        "--output_description", 
+        "--output_description",
         type=str,
         help="Output artifact description",
         required=True

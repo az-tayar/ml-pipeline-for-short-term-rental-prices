@@ -7,7 +7,7 @@ import wandb
 import mlflow
 import pandas as pd
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-    
+
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -60,18 +60,19 @@ def go(args):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="Test the provided model against the test dataset")
+    parser = argparse.ArgumentParser(
+        description="Test the provided model against the test dataset")
 
     parser.add_argument(
         "--mlflow_model",
-        type=str, 
+        type=str,
         help="Input MLFlow model",
         required=True
     )
 
     parser.add_argument(
         "--test_dataset",
-        type=str, 
+        type=str,
         help="Test dataset",
         required=True
     )

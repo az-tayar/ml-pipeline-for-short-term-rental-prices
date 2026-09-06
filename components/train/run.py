@@ -53,8 +53,7 @@ def go(args):
     y = X.pop("y")
 
     X_train, X_val, y_train, y_val = train_test_split(
-        X, y, test_size=args.val_size, stratify=y, random_state=args.random_seed
-    )
+        X, y, test_size=args.val_size, stratify=y, random_state=args.random_seed)
 
     logger.info("Preparing sklearn pipeline")
 
@@ -63,7 +62,8 @@ def go(args):
     # Then fit it to the X_train, y_train data
     logger.info("Fitting")
 
-    # Fit the pipeline sk_pipe by calling the .fit method on X_train and y_train
+    # Fit the pipeline sk_pipe by calling the .fit method on X_train and
+    # y_train
     sk_pipe.fit(X_train, y_train)
 
     # Compute r2 and MAE
@@ -100,7 +100,7 @@ def go(args):
 
     artifact.add_dir("../../model")
     run.log_artifact(artifact)
-    
+
     # Plot feature importance
     fig_conf_mtrx = plot_confusion_matrix(y_val, y_pred)
 
@@ -133,7 +133,12 @@ def plot_confusion_matrix(y_val, y_pred):
     cm = confusion_matrix(y_val, y_pred, labels=["no", "yes"])
     fig, ax = plt.subplots(figsize=(6, 6))
 
-    ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["No", "Yes"]).plot(ax=ax)
+    ConfusionMatrixDisplay(
+        confusion_matrix=cm,
+        display_labels=[
+            "No",
+            "Yes"]).plot(
+        ax=ax)
     return fig
 
 
@@ -149,27 +154,46 @@ def get_inference_pipeline(rf_config):
     """
 
     # Let's handle the categorical features first
-    # Ordinal categorical are categorical values for which the order is meaningful
+    # Ordinal categorical are categorical values for which the order is
+    # meaningful
     ordinal_cat_cols = ["education"]
-    non_ordinal_cat_cols = ["job", "marital", "default", "housing", "loan", "contact", "poutcome", "month", "day_of_week"]
-    
+    non_ordinal_cat_cols = [
+        "job",
+        "marital",
+        "default",
+        "housing",
+        "loan",
+        "contact",
+        "poutcome",
+        "month",
+        "day_of_week"]
+
     ordinal_cat_preproc = OrdinalEncoder()
     non_ordinal_cat_preproc = Pipeline(
         steps=[
             ('imputer', SimpleImputer(strategy="most_frequent")),
             ('encoder', OneHotEncoder())
-            ]
+        ]
     )
 
-    # Let's impute the numerical columns to make sure we can handle missing values
-    median_imputed_cols = ["age", "duration", "campaign", "pdays", "emp.var.rate", 
-                           "cons.price.idx", "cons.conf.idx", "euribor3m", "nr.employed"]
-    
+    # Let's impute the numerical columns to make sure we can handle missing
+    # values
+    median_imputed_cols = [
+        "age",
+        "duration",
+        "campaign",
+        "pdays",
+        "emp.var.rate",
+        "cons.price.idx",
+        "cons.conf.idx",
+        "euribor3m",
+        "nr.employed"]
+
     zero_imputed_cols = ["previous"]
 
     median_imputer = SimpleImputer(strategy="median")
     zero_imputer = SimpleImputer(strategy="constant", fill_value=0)
-    
+
     # putting everything together
     preprocessor = ColumnTransformer(
         transformers=[
@@ -179,7 +203,8 @@ def get_inference_pipeline(rf_config):
             ("impute_median", median_imputer, median_imputed_cols)],
     )
 
-    processed_features = ordinal_cat_cols + non_ordinal_cat_cols + zero_imputed_cols + median_imputed_cols
+    processed_features = ordinal_cat_cols + non_ordinal_cat_cols + \
+        zero_imputed_cols + median_imputed_cols
 
     # Create random forest
     random_forest = RandomForestClassifier(**rf_config)

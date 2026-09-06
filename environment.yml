@@ -13,3 +13,4 @@ dependencies:
   - pip:
       - mlflow==3.3.2
       - wandb==0.22.3
+      - autopep8==2.0.2
